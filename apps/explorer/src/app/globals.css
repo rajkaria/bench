@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bench-accent: #F97316;
+}
+
+body {
+  background: #0A0A0A;
+  color: #FAFAFA;
+}
+
+@layer utilities {
+  .bench-gradient {
+    background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
