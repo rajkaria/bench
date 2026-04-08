@@ -1,0 +1,32 @@
+{
+  "name": "@usebench/verifier",
+  "version": "0.1.0",
+  "description": "Verify Bench Best Execution Certificates independently — no trust in Bench required",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["bench", "defi", "best-execution", "nbbo", "verification", "dex-aggregator"],
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  }
+}
