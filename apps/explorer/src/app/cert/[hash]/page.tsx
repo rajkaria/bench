@@ -1,10 +1,37 @@
 import { SourceBar } from '@/components/source-bar';
+import { fetchApi } from '@/lib/api';
 
-// Demo data — in production, fetched from Bench API by cert hash
-const DEMO_CERT = {
+interface CertDetail {
+  certHash: string;
+  certId?: string;
+  level: 'CERTIFIED' | 'WARNING' | 'FAILED';
+  delta: number;
+  agreement: number;
+  confidenceTier: string;
+  agent: { address: string; agentId?: string };
+  trade: { chain: string; block: number; pair: string };
+  chosen: { source: string; output: string };
+  sources: {
+    source: string;
+    output: string;
+    outputRaw: number;
+    best?: boolean;
+    chosen?: boolean;
+    latency?: number;
+  }[];
+  failedSources: { source: string; error: string }[];
+  median: string;
+  stddev: string;
+  execution: { txHash: string; actual: string; status: 'HONORED' | 'VIOLATED' | 'PENDING' } | null;
+  attestor: { address: string; signature: string };
+  anchor: { chain: string; block: number } | null;
+  queryDuration: number;
+}
+
+const DEMO_CERT: CertDetail = {
   certHash: '0xa7c4d5e6f7890123456789abcdef0123456789abcdef0123456789abcdef0123',
   certId: '550e8400-e29b-41d4-a716-446655440000',
-  level: 'CERTIFIED' as const,
+  level: 'CERTIFIED',
   delta: 5,
   agreement: 92,
   confidenceTier: 'STRONG',
@@ -25,7 +52,7 @@ const DEMO_CERT = {
   failedSources: [{ source: 'CoW Swap', error: 'timeout' }],
   median: '0.4203 WETH',
   stddev: '0.0003 WETH (0.07%)',
-  execution: { txHash: '0x...abc', actual: '0.4203 WETH', status: 'HONORED' as const },
+  execution: { txHash: '0x...abc', actual: '0.4203 WETH', status: 'HONORED' },
   attestor: { address: '0xBenchAttestor...', signature: 'Valid' },
   anchor: { chain: 'X Layer', block: 8472194 },
   queryDuration: 2843,
@@ -37,8 +64,14 @@ const LEVEL_COLORS = {
   FAILED: 'text-bench-red',
 };
 
-export default function CertDetailPage() {
-  const cert = DEMO_CERT;
+const LEVEL_ICONS = { CERTIFIED: '✅', WARNING: '⚠️', FAILED: '❌' };
+
+export default async function CertDetailPage({ params }: { params: Promise<{ hash: string }> }) {
+  const { hash } = await params;
+  const cert = await fetchApi<CertDetail>(`/v1/certs/${hash}`, {
+    ...DEMO_CERT,
+    certHash: hash,
+  });
 
   return (
     <div className="space-y-6">
@@ -49,7 +82,7 @@ export default function CertDetailPage() {
           <p className="font-mono text-sm break-all">{cert.certHash}</p>
         </div>
         <span className={`text-3xl font-bold ${LEVEL_COLORS[cert.level]}`}>
-          {cert.level} {cert.level === 'CERTIFIED' ? '\u2705' : cert.level === 'WARNING' ? '\u26A0\uFE0F' : '\u274C'}
+          {cert.level} {LEVEL_ICONS[cert.level]}
         </span>
       </div>
 
@@ -71,14 +104,14 @@ export default function CertDetailPage() {
 
       {/* Swap Info */}
       <Section title="SWAP">
-        <InfoRow label="Agent" value={`${cert.agent.address.slice(0, 10)}... (${cert.agent.agentId})`} />
+        <InfoRow label="Agent" value={`${cert.agent.address.slice(0, 10)}...${cert.agent.address.slice(-4)}${cert.agent.agentId ? ` (${cert.agent.agentId})` : ''}`} />
         <InfoRow label="Chain" value={cert.trade.chain} />
         <InfoRow label="Block" value={cert.trade.block.toString()} />
         <InfoRow label="Trade" value={cert.trade.pair} />
         <InfoRow label="Chosen" value={`${cert.chosen.output} (${cert.chosen.source})`} />
       </Section>
 
-      {/* Multi-Source Query — THE KILLER VISUALIZATION */}
+      {/* Multi-Source Query */}
       <Section title={`MULTI-SOURCE QUERY (${cert.sources.length + cert.failedSources.length} sources)`}>
         <div className="space-y-2">
           {cert.sources.map((s) => (
@@ -88,9 +121,9 @@ export default function CertDetailPage() {
               output={s.output}
               value={s.outputRaw}
               maxValue={cert.sources[0]!.outputRaw}
-              isBest={s.best}
-              isChosen={s.chosen}
-              latency={s.latency}
+              isBest={s.best ?? false}
+              isChosen={s.chosen ?? false}
+              latency={s.latency ?? 0}
             />
           ))}
           {cert.failedSources.map((s) => (
@@ -110,17 +143,25 @@ export default function CertDetailPage() {
       </Section>
 
       {/* Execution */}
-      <Section title="EXECUTION">
-        <InfoRow label="TX Hash" value={cert.execution.txHash} />
-        <InfoRow label="Actual" value={cert.execution.actual} />
-        <InfoRow label="Status" value={`${cert.execution.status} \u2705`} className="text-bench-green" />
-      </Section>
+      {cert.execution && (
+        <Section title="EXECUTION">
+          <InfoRow label="TX Hash" value={cert.execution.txHash} />
+          <InfoRow label="Actual" value={cert.execution.actual} />
+          <InfoRow
+            label="Status"
+            value={`${cert.execution.status} ${cert.execution.status === 'HONORED' ? '✅' : cert.execution.status === 'VIOLATED' ? '❌' : '⏳'}`}
+            className={cert.execution.status === 'HONORED' ? 'text-bench-green' : cert.execution.status === 'VIOLATED' ? 'text-bench-red' : ''}
+          />
+        </Section>
+      )}
 
       {/* Attestor */}
       <Section title="ATTESTOR">
         <InfoRow label="Address" value={cert.attestor.address} />
         <InfoRow label="Signature" value={cert.attestor.signature} />
-        <InfoRow label="Anchor" value={`${cert.anchor.chain} block ${cert.anchor.block}`} />
+        {cert.anchor && (
+          <InfoRow label="Anchor" value={`${cert.anchor.chain} block ${cert.anchor.block}`} />
+        )}
       </Section>
 
       {/* Actions */}

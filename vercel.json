@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @bench/explorer build",
+  "outputDirectory": "apps/explorer/.next",
+  "installCommand": "pnpm install",
+  "framework": "nextjs"
+}

@@ -6,6 +6,7 @@ import { loadAttestorKeypair } from '@bench/shared';
 import { createCertifyRoute } from './routes/certify.js';
 import { createVerifyRoute } from './routes/verify.js';
 import { createHealthRoute } from './routes/health.js';
+import { createExplorerRoutes } from './routes/explorer.js';
 
 const app = new Hono();
 
@@ -31,6 +32,7 @@ const attestorConfig = {
 app.route('/', createHealthRoute());
 app.route('/', createCertifyRoute(attestorConfig));
 app.route('/', createVerifyRoute());
+app.route('/', createExplorerRoutes());
 
 // Start server
 const port = parseInt(process.env['PORT'] ?? '3001', 10);

@@ -1,0 +1,17 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "pnpm install && pnpm --filter @bench/attestor build"
+
+[deploy]
+startCommand = "node packages/attestor/dist/index.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "bench-attestor"
+
+[services.variables]
+PORT = "3001"
+NODE_ENV = "production"

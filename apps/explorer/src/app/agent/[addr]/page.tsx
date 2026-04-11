@@ -1,4 +1,26 @@
-const DEMO_AGENT = {
+import { fetchApi } from '@/lib/api';
+
+interface AgentProfile {
+  address: string;
+  agentId: string | null;
+  framework: string | null;
+  benchScore: number;
+  certificationRate: number;
+  avgSlippage: number;
+  honorRate: number;
+  stats: { total: number; certified: number; warning: number; failed: number; honored: number; violated: number };
+  recentCerts: {
+    cert_hash: string;
+    certification_level: 'CERTIFIED' | 'WARNING' | 'FAILED';
+    source_agreement_score: number;
+    slippage_delta_bps: number;
+    input_token_symbol: string;
+    output_token_symbol: string;
+    created_at: string;
+  }[];
+}
+
+const DEMO_AGENT: AgentProfile = {
   address: '0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18',
   agentId: 'bench-demo-agent',
   framework: 'custom-ts',
@@ -8,10 +30,10 @@ const DEMO_AGENT = {
   honorRate: 99.1,
   stats: { total: 312, certified: 300, warning: 10, failed: 2, honored: 295, violated: 5 },
   recentCerts: [
-    { hash: '0xa7c4...e3f1', level: 'CERTIFIED' as const, agreement: 92, delta: 5, pair: 'USDC/WETH', time: '2m ago' },
-    { hash: '0xb8d5...f402', level: 'CERTIFIED' as const, agreement: 88, delta: 8, pair: 'USDC/WOKB', time: '7m ago' },
-    { hash: '0xc9e6...0513', level: 'WARNING' as const, agreement: 62, delta: 23, pair: 'WETH/USDC', time: '12m ago' },
-    { hash: '0xdaf7...1624', level: 'CERTIFIED' as const, agreement: 95, delta: 2, pair: 'WOKB/USDC', time: '17m ago' },
+    { cert_hash: '0xa7c4d5e6f789012345e3f1', certification_level: 'CERTIFIED', source_agreement_score: 92, slippage_delta_bps: 5, input_token_symbol: 'USDC', output_token_symbol: 'WETH', created_at: new Date(Date.now() - 2 * 60000).toISOString() },
+    { cert_hash: '0xb8d5e6f7890123456f402', certification_level: 'CERTIFIED', source_agreement_score: 88, slippage_delta_bps: 8, input_token_symbol: 'USDC', output_token_symbol: 'WOKB', created_at: new Date(Date.now() - 7 * 60000).toISOString() },
+    { cert_hash: '0xc9e6f78901234567890513', certification_level: 'WARNING', source_agreement_score: 62, slippage_delta_bps: 23, input_token_symbol: 'WETH', output_token_symbol: 'USDC', created_at: new Date(Date.now() - 12 * 60000).toISOString() },
+    { cert_hash: '0xdaf7089012345678901624', certification_level: 'CERTIFIED', source_agreement_score: 95, slippage_delta_bps: 2, input_token_symbol: 'WOKB', output_token_symbol: 'USDC', created_at: new Date(Date.now() - 17 * 60000).toISOString() },
   ],
 };
 
@@ -21,8 +43,19 @@ const LEVEL_COLORS = {
   FAILED: 'text-bench-red',
 };
 
-export default function AgentProfilePage() {
-  const agent = DEMO_AGENT;
+function timeAgo(iso: string): string {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (diff < 1) return 'just now';
+  if (diff < 60) return `${diff}m ago`;
+  return `${Math.floor(diff / 60)}h ago`;
+}
+
+export default async function AgentProfilePage({ params }: { params: Promise<{ addr: string }> }) {
+  const { addr } = await params;
+  const agent = await fetchApi<AgentProfile>(`/v1/agents/${addr}`, {
+    ...DEMO_AGENT,
+    address: addr,
+  });
 
   return (
     <div className="space-y-6">
@@ -31,7 +64,11 @@ export default function AgentProfilePage() {
         <div>
           <p className="text-bench-muted text-sm">Agent Profile</p>
           <p className="font-mono text-lg">{agent.address}</p>
-          {agent.agentId && <p className="text-bench-muted text-sm">{agent.agentId} ({agent.framework})</p>}
+          {agent.agentId && (
+            <p className="text-bench-muted text-sm">
+              {agent.agentId} {agent.framework ? `(${agent.framework})` : ''}
+            </p>
+          )}
         </div>
         <div className="text-right">
           <p className="text-5xl font-bold bench-gradient">{agent.benchScore}</p>
@@ -72,19 +109,25 @@ export default function AgentProfilePage() {
         <div className="space-y-2">
           {agent.recentCerts.map((cert) => (
             <a
-              key={cert.hash}
-              href={`/cert/${cert.hash}`}
+              key={cert.cert_hash}
+              href={`/cert/${cert.cert_hash}`}
               className="flex items-center justify-between bg-bench-surface border border-bench-border rounded-lg p-3 hover:border-bench-accent/50 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <span className={`font-bold text-xs ${LEVEL_COLORS[cert.level]}`}>{cert.level}</span>
-                <span className="font-mono text-sm text-bench-muted">{cert.hash}</span>
-                <span className="text-sm">{cert.pair}</span>
+                <span className={`font-bold text-xs ${LEVEL_COLORS[cert.certification_level]}`}>
+                  {cert.certification_level}
+                </span>
+                <span className="font-mono text-sm text-bench-muted">
+                  {cert.cert_hash.slice(0, 14)}...
+                </span>
+                <span className="text-sm">
+                  {cert.input_token_symbol}/{cert.output_token_symbol}
+                </span>
               </div>
               <div className="flex items-center gap-4 text-sm text-bench-muted">
-                <span>Agreement: {cert.agreement}/100</span>
-                <span>{cert.delta} bps</span>
-                <span>{cert.time}</span>
+                <span>Agreement: {cert.source_agreement_score}/100</span>
+                <span>{cert.slippage_delta_bps} bps</span>
+                <span>{timeAgo(cert.created_at)}</span>
               </div>
             </a>
           ))}
