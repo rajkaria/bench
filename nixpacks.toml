@@ -1,0 +1,10 @@
+[phases.build]
+cmds = [
+  "pnpm install",
+  "pnpm --filter @bench/shared build",
+  "pnpm --filter @bench/db build",
+  "pnpm --filter @bench/attestor build",
+]
+
+[start]
+cmd = "node packages/attestor/dist/index.js"
