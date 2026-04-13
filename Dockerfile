@@ -11,7 +11,7 @@ COPY tsconfig.base.json ./
 # Copy package.json files for all workspace packages
 COPY packages/shared/package.json packages/shared/tsconfig.json packages/shared/
 COPY packages/db/package.json packages/db/tsconfig.json packages/db/
-COPY packages/attestor/package.json packages/attestor/tsconfig.json packages/attestor/
+COPY packages/attestor/package.json packages/attestor/tsconfig.json packages/attestor/tsup.config.ts packages/attestor/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -29,4 +29,4 @@ RUN pnpm --filter @bench/shared build && \
 
 EXPOSE 3001
 
-CMD ["node", "packages/attestor/dist/index.js"]
+CMD ["node", "packages/attestor/dist/server.js"]

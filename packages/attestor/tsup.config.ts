@@ -1,9 +1,13 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ['src/server.ts'],
   format: ['esm'],
   noExternal: ['@bench/shared', '@bench/db'],
-  target: 'es2022',
+  target: 'node22',
   clean: true,
+  platform: 'node',
+  banner: {
+    js: `import{createRequire}from'module';const require=createRequire(import.meta.url);`,
+  },
 });
