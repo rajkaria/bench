@@ -7,4 +7,4 @@ cmds = [
 ]
 
 [start]
-cmd = "node packages/attestor/dist/index.js"
+cmd = "node packages/attestor/dist/server.js"
