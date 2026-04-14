@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "onchainos-dex": {
+      "type": "http",
+      "url": "https://web3.okx.com/api/v1/onchainos-mcp",
+      "description": "OKX Onchain OS DEX Aggregator MCP Server — provides dex-okx-dex-quote, dex-okx-dex-supported-chains, dex-okx-dex-liquidity tools",
+      "headers": {
+        "OK-ACCESS-KEY": "d573a84c-8e79-4a35-b0c6-427e9ad2478d"
+      },
+      "tools": [
+        "dex-okx-dex-quote",
+        "dex-okx-dex-supported-chains",
+        "dex-okx-dex-liquidity"
+      ]
+    }
+  }
+}

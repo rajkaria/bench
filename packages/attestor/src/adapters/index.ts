@@ -10,6 +10,7 @@ export { jupiterAdapter } from './jupiter.js';
 export { lifiAdapter } from './lifi.js';
 export { squidAdapter } from './squid.js';
 export { rangoAdapter } from './rango.js';
+export { okxMCPAdapter } from './okx-mcp.js';
 
 export { adapterMap, allAdapters, evmAdapters, solanaAdapters, crossChainAdapters, selectAdapters } from './registry.js';
 export { withTimeout, withRetry, formatUnits } from './utils.js';

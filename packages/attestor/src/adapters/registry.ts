@@ -11,6 +11,7 @@ import { jupiterAdapter } from './jupiter.js';
 import { lifiAdapter } from './lifi.js';
 import { squidAdapter } from './squid.js';
 import { rangoAdapter } from './rango.js';
+import { okxMCPAdapter } from './okx-mcp.js';
 
 /** All registered adapters keyed by their unique name. */
 export const adapterMap: Record<string, BaseAdapter> = {
@@ -26,6 +27,7 @@ export const adapterMap: Record<string, BaseAdapter> = {
   'lifi': lifiAdapter,
   'squid': squidAdapter,
   'rango': rangoAdapter,
+  'okx-mcp': okxMCPAdapter,
 };
 
 /** Flat list of all adapters. */
@@ -34,7 +36,7 @@ export const allAdapters: BaseAdapter[] = Object.values(adapterMap);
 /** Tier 1: Universal EVM aggregators. */
 export const evmAdapters: BaseAdapter[] = [
   okxAdapter, oneinchAdapter, veloraAdapter, odosAdapter,
-  kyberAdapter, cowswapAdapter, uniswapAIAdapter, openoceanAdapter,
+  kyberAdapter, cowswapAdapter, uniswapAIAdapter, openoceanAdapter, okxMCPAdapter,
 ];
 
 /** Tier 2: Solana-native aggregators. */

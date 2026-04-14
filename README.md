@@ -6,6 +6,17 @@ No single aggregator can tell you when sources disagree. Bench can.
 
 ---
 
+## Live Deployments
+
+| Component | URL / Address |
+|-----------|---------------|
+| **Explorer** | [bench-explorer-five.vercel.app](https://bench-explorer-five.vercel.app) |
+| **Attestor API** | [attestor-production-b1ad.up.railway.app](https://attestor-production-b1ad.up.railway.app/health) |
+| **BenchRegistry.sol** | [`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`](https://www.okx.com/web3/explorer/xlayer-test/address/0x6a400d858daA46C9f955601B672cc1a8899DcE3f) on X Layer Testnet |
+| **Agentic Wallet** | `0x5a6Ad7E615E82B3d3eE2f70c4F4dF38f224ACcd1` (attestor + demo agent identity) |
+
+---
+
 ## How It Works
 
 ```
@@ -94,11 +105,11 @@ Bench queries the relevant subset for each swap:
 
 | Tier | Aggregators | When Queried |
 |------|-------------|-------------|
-| **Tier 1 (EVM)** | OKX, 1inch, Velora, Odos, KyberSwap, CoW Swap, Uniswap AI, OpenOcean | Single-chain EVM swaps |
+| **Tier 1 (EVM)** | OKX (via Onchain OS MCP), 1inch, Velora, Odos, KyberSwap, CoW Swap, Uniswap AI, OpenOcean | Single-chain EVM swaps |
 | **Tier 2 (Solana)** | Jupiter | Solana swaps |
 | **Tier 3 (Cross-chain)** | LI.FI, Squid, Rango | Cross-chain swaps |
 
-**12 independent sources.** No single aggregator controls the consensus.
+**13 independent sources.** No single aggregator controls the consensus.
 
 ## Best Execution Certificate (BEC v2)
 
@@ -146,7 +157,7 @@ The verifier has **zero dependencies** on Bench internals. It re-implements cano
 
 ## Smart Contract
 
-**BenchRegistry.sol** on X Layer (chain 196):
+**BenchRegistry.sol** deployed at `0x6a400d858daA46C9f955601B672cc1a8899DcE3f` on X Layer Testnet (chain 1952):
 - `anchorCertificate()`: store cert hash, level, agreement score on-chain
 - `batchAnchor()`: gas-efficient multi-cert anchoring
 - `markExecutionVerified()`: post-trade HONORED/VIOLATED events
@@ -163,14 +174,30 @@ The verifier has **zero dependencies** on Bench internals. It re-implements cano
 
 ## Onchain OS Integration
 
-Bench uses these OKX Onchain OS skills as core data sources:
-- OKX DEX Aggregator (smart routing across 500+ DEXs)
-- OKX DEX Token (token metadata)
-- OKX DEX Market (market data)
+### OKX DEX MCP Server (Primary Integration)
 
-Plus Uniswap AI Smart Route as a first-class source.
+Bench integrates the OKX DEX Aggregator via the **Onchain OS MCP server** (`packages/attestor/src/adapters/okx-mcp.ts`). The adapter calls the `dex-okx-dex-quote` MCP tool to query aggregated quotes across 500+ DEX liquidity sources, contributing to the multi-source consensus. MCP server config is in `mcp-config.json`.
 
-All certificates are anchored on **X Layer** with zero gas fees.
+OKX Onchain OS MCP tools used:
+- `dex-okx-dex-quote` -- aggregated quotes across 500+ DEX sources
+- `dex-okx-dex-supported-chains` -- blockchain network discovery
+- `dex-okx-dex-liquidity` -- active DEX source identification
+
+### Agentic Wallet
+
+The demo agent operates with a persistent on-chain identity (Agentic Wallet) at `0x5a6Ad7E615E82B3d3eE2f70c4F4dF38f224ACcd1` on X Layer. This wallet:
+- Signs every Best Execution Certificate via EIP-712
+- Receives certification history linked to its address on-chain
+- Builds a verifiable reputation via `BenchRegistry.getAgentStats()`
+- Executes certified swaps autonomously (DCA strategy)
+
+### Uniswap AI Smart Route
+
+Uniswap AI is integrated as a first-class consensus source (`packages/attestor/src/adapters/uniswap-ai.ts`). It queries the Uniswap routing API for V2/V3/Mixed pool quotes across 9 chains, contributing to every Best Execution Certificate.
+
+### X Layer
+
+All certificates are anchored on **X Layer** via BenchRegistry.sol (`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`) with zero gas fees. The contract stores cert hashes, certification levels, agreement scores, and agent statistics on-chain.
 
 ## Test Coverage
 
@@ -195,6 +222,18 @@ Once one agent shows a "Bench NBBO" badge, every other agent has to integrate or
 
 ---
 
-**Built for the OKX Build X Hackathon (Skills Arena)**
+## OKX Build X Hackathon
+
+**Arena:** X Layer Arena
+
+| Requirement | How Bench Satisfies It |
+|-------------|----------------------|
+| **Built on X Layer** | BenchRegistry.sol deployed at `0x6a400d858daA46C9f955601B672cc1a8899DcE3f` (chain 1952) |
+| **Agentic Wallet** | `0x5a6Ad7E615E82B3d3eE2f70c4F4dF38f224ACcd1` -- signs certs, deploys contracts, builds on-chain reputation |
+| **Onchain OS skill** | OKX DEX MCP adapter (`okx-mcp.ts`) queries `dex-okx-dex-quote` as consensus data source |
+| **Uniswap skill** | Uniswap AI Smart Route adapter (`uniswap-ai.ts`) as first-class source |
+| **Public repo** | [github.com/rajkaria/bench](https://github.com/rajkaria/bench) |
+
+**Built for the OKX Build X Hackathon**
 
 [usebench.xyz](https://usebench.xyz) | [@usebench](https://x.com/usebench)
