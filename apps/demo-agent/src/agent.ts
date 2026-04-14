@@ -16,11 +16,11 @@ const AGENT_CONFIG = {
   /** Swap interval in milliseconds. Default: 5 minutes. */
   intervalMs: parseInt(process.env['DEMO_INTERVAL_MS'] ?? '300000', 10),
 
-  /** Chain to operate on. Default: X Layer Testnet (1952). */
-  chainId: parseInt(process.env['DEMO_CHAIN_ID'] ?? '1952', 10),
+  /** Chain to operate on. Default: X Layer Mainnet (196). */
+  chainId: parseInt(process.env['DEMO_CHAIN_ID'] ?? '196', 10),
 
   /** RPC URL for the chain. */
-  rpcUrl: process.env['XLAYER_RPC_URL'] ?? 'https://testrpc.xlayer.tech',
+  rpcUrl: process.env['XLAYER_RPC_URL'] ?? 'https://rpc.xlayer.tech',
 };
 
 // Common token addresses on X Layer
@@ -137,9 +137,9 @@ async function main(): Promise<void> {
   console.log('');
   console.log('--- Agentic Wallet (Onchain OS Identity) ---');
   console.log(`Address:  ${AGENT_CONFIG.walletAddress}`);
-  console.log(`Chain:    X Layer Testnet (${AGENT_CONFIG.chainId})`);
+  console.log(`Chain:    X Layer Mainnet (${AGENT_CONFIG.chainId})`);
   console.log(`Role:     Autonomous DCA agent with Bench-certified execution`);
-  console.log(`Registry: 0x6a400d858daA46C9f955601B672cc1a8899DcE3f`);
+  console.log(`Registry: 0x6a400d858daA46C9f955601B672cc1a8899DcE3f (X Layer Mainnet)`);
   console.log('');
   console.log(`API:      ${AGENT_CONFIG.benchApiUrl}`);
   console.log(`Interval: ${AGENT_CONFIG.intervalMs / 1000}s`);

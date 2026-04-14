@@ -12,7 +12,7 @@ No single aggregator can tell you when sources disagree. Bench can.
 |-----------|---------------|
 | **Explorer** | [bench-explorer-five.vercel.app](https://bench-explorer-five.vercel.app) |
 | **Attestor API** | [attestor-production-b1ad.up.railway.app](https://attestor-production-b1ad.up.railway.app/health) |
-| **BenchRegistry.sol** | [`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`](https://www.okx.com/web3/explorer/xlayer-test/address/0x6a400d858daA46C9f955601B672cc1a8899DcE3f) on X Layer Testnet |
+| **BenchRegistry.sol** | [`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`](https://www.okx.com/web3/explorer/xlayer/address/0x6a400d858daA46C9f955601B672cc1a8899DcE3f) on X Layer Mainnet (chain 196) |
 | **Agentic Wallet** | `0x5a6Ad7E615E82B3d3eE2f70c4F4dF38f224ACcd1` (attestor + demo agent identity) |
 
 ---
@@ -157,7 +157,7 @@ The verifier has **zero dependencies** on Bench internals. It re-implements cano
 
 ## Smart Contract
 
-**BenchRegistry.sol** deployed at `0x6a400d858daA46C9f955601B672cc1a8899DcE3f` on X Layer Testnet (chain 1952):
+**BenchRegistry.sol** deployed at `0x6a400d858daA46C9f955601B672cc1a8899DcE3f` on X Layer Mainnet (chain 196):
 - `anchorCertificate()`: store cert hash, level, agreement score on-chain
 - `batchAnchor()`: gas-efficient multi-cert anchoring
 - `markExecutionVerified()`: post-trade HONORED/VIOLATED events
@@ -197,7 +197,7 @@ Uniswap AI is integrated as a first-class consensus source (`packages/attestor/s
 
 ### X Layer
 
-All certificates are anchored on **X Layer** via BenchRegistry.sol (`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`) with zero gas fees. The contract stores cert hashes, certification levels, agreement scores, and agent statistics on-chain.
+All certificates are anchored on **X Layer Mainnet** via BenchRegistry.sol (`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`, chain 196) with zero gas fees. The contract stores cert hashes, certification levels, agreement scores, and agent statistics on-chain.
 
 ## Test Coverage
 
@@ -228,7 +228,7 @@ Once one agent shows a "Bench NBBO" badge, every other agent has to integrate or
 
 | Requirement | How Bench Satisfies It |
 |-------------|----------------------|
-| **Built on X Layer** | BenchRegistry.sol deployed at `0x6a400d858daA46C9f955601B672cc1a8899DcE3f` (chain 1952) |
+| **Built on X Layer** | BenchRegistry.sol deployed at `0x6a400d858daA46C9f955601B672cc1a8899DcE3f` on **X Layer Mainnet** (chain 196) |
 | **Agentic Wallet** | `0x5a6Ad7E615E82B3d3eE2f70c4F4dF38f224ACcd1` -- signs certs, deploys contracts, builds on-chain reputation |
 | **Onchain OS skill** | OKX DEX MCP adapter (`okx-mcp.ts`) queries `dex-okx-dex-quote` as consensus data source |
 | **Uniswap skill** | Uniswap AI Smart Route adapter (`uniswap-ai.ts`) as first-class source |
