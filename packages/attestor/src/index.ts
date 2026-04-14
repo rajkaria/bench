@@ -1,5 +1,2 @@
-export * from './adapters/index.js';
-export { computeConsensus, computeMedian, computeStdDev, bigIntSqrt } from './services/consensus.js';
-export { queryAllSources } from './services/multi-source-aggregator.js';
-export { buildCertificate } from './services/certificate-builder.js';
-export type { CertifyInput, AttestorConfig } from './services/certificate-builder.js';
+// Re-export server — ensures both dist/index.js and dist/server.js work as entry points
+export * from './server.js';
