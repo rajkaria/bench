@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { query } from '@bench/db';
+import { statsTracker } from '../services/stats-tracker.js';
 
 export function createExplorerRoutes() {
   const app = new Hono();
@@ -39,7 +40,8 @@ export function createExplorerRoutes() {
         avgQueryTime: `${avgLatency.rows[0]?.avg_latency ?? '0'}s`,
       });
     } catch {
-      return c.json({ error: 'Database unavailable' }, 503);
+      // DB unavailable — fall back to in-memory stats from this session
+      return c.json(statsTracker.getStats());
     }
   });
 

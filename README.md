@@ -1,8 +1,12 @@
 # Bench — The NBBO of Autonomous Agent Trading
 
-**Multi-source best-execution oracle.** Bench queries 12+ DEX aggregators in parallel, computes the consensus best price, and produces cryptographically-signed certificates that any agent can use to prove optimal execution.
+**Multi-source best-execution oracle.** Bench queries 13 DEX aggregators in parallel, computes the consensus best price, and produces cryptographically-signed certificates that any agent can use to prove optimal execution.
 
 No single aggregator can tell you when sources disagree. Bench can.
+
+![Bench Explorer](docs/explorer-screenshot.png)
+
+> **[Watch the 30-second demo video](apps/demo-video/out/bench-demo.mp4)** | **[Live Explorer](https://usebench.xyz)** | **[API Health](https://attestor-production-b1ad.up.railway.app/health)**
 
 ---
 
@@ -10,7 +14,7 @@ No single aggregator can tell you when sources disagree. Bench can.
 
 | Component | URL / Address |
 |-----------|---------------|
-| **Explorer** | [bench-explorer-five.vercel.app](https://bench-explorer-five.vercel.app) |
+| **Explorer** | [usebench.xyz](https://usebench.xyz) |
 | **Attestor API** | [attestor-production-b1ad.up.railway.app](https://attestor-production-b1ad.up.railway.app/health) |
 | **BenchRegistry.sol** | [`0x6a400d858daA46C9f955601B672cc1a8899DcE3f`](https://www.okx.com/web3/explorer/xlayer/address/0x6a400d858daA46C9f955601B672cc1a8899DcE3f) on X Layer Mainnet (chain 196) |
 | **Agentic Wallet** | `0x5a6Ad7E615E82B3d3eE2f70c4F4dF38f224ACcd1` (attestor + demo agent identity) |

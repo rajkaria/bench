@@ -4,6 +4,8 @@ import { isEvmChain, CHAINS } from '@bench/shared';
 import { queryAllSources } from '../services/multi-source-aggregator.js';
 import { computeConsensus } from '../services/consensus.js';
 import { buildCertificate, type AttestorConfig } from '../services/certificate-builder.js';
+import { anchorOnChain } from '../services/on-chain-anchor.js';
+import { statsTracker } from '../services/stats-tracker.js';
 
 export interface CertifyRequestBody {
   agent: CertAgent;
@@ -77,8 +79,27 @@ export function createCertifyRoute(attestorConfig: AttestorConfig) {
       attestorConfig,
     );
 
-    // TODO: Persist to database (Phase 6+)
-    // TODO: Anchor on-chain (Phase 5+)
+    // Record in-memory stats (available even when DB is down)
+    statsTracker.recordCert(
+      cert.quality.certificationLevel,
+      queryResult.successful.length,
+      cert.consensus.sourceAgreementScore,
+      queryResult.totalQueryDurationMs,
+    );
+
+    // Fire-and-forget on-chain anchoring
+    anchorOnChain(
+      {
+        certHash: cert.certHash as `0x${string}`,
+        agentAddress: cert.agent.walletAddress as `0x${string}`,
+        certificationLevel: cert.quality.certificationLevel,
+        sourceAgreementScore: cert.consensus.sourceAgreementScore,
+        sourcesQueried: cert.sources.queried.length,
+        sourcesSuccessful: cert.sources.successful.length,
+        attestorSignature: cert.attestor.signature as `0x${string}`,
+      },
+      attestorConfig.privateKey,
+    );
 
     return c.json(cert, 201);
   });
