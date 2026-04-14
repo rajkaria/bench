@@ -7,13 +7,15 @@
 }
 
 body {
-  background: #0A0A0A;
+  background: #09090B;
   color: #FAFAFA;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
   .bench-gradient {
-    background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+    background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
