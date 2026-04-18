@@ -167,8 +167,8 @@ export default function ArchitecturePage() {
         <a href="/docs/integration" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
           ← Integration Guide
         </a>
-        <a href="/docs/faq" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-          FAQ →
+        <a href="/docs/onchain" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+          On-Chain →
         </a>
       </div>
     </div>

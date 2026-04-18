@@ -33,3 +33,12 @@ out/
 npm-debug.log*
 pnpm-debug.log*
 .vercel
+
+# Internal/dev-only docs (not part of hackathon submission or product)
+BENCH_OKX_HACKATHON_BUILD_SPEC.md
+DO_LATER.md
+CLAUDE.md
+docs/HACKATHON_BRIEF.md
+.superpowers/
+.claude/
+memory/

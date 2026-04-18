@@ -84,8 +84,8 @@ export default function FAQPage() {
 
       {/* Nav */}
       <div className="pt-8 border-t border-bench-border-subtle">
-        <a href="/docs/architecture" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-          ← Architecture
+        <a href="/docs/onchain" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+          ← On-Chain
         </a>
       </div>
     </div>

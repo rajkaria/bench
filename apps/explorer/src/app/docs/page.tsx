@@ -25,6 +25,11 @@ const SECTIONS = [
     desc: 'System components, data flow, trust model, and verification pipeline.',
   },
   {
+    href: '/docs/onchain',
+    title: 'On-Chain',
+    desc: 'The story of how every certificate becomes an immutable proof on X Layer — what\'s live, what\'s next.',
+  },
+  {
     href: '/docs/faq',
     title: 'FAQ',
     desc: 'Common questions about Bench from developers, protocols, and researchers.',

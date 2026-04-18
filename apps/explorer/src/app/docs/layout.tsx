@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { href: '/docs/who-should-use', label: 'Who Should Use Bench' },
   { href: '/docs/integration', label: 'Integration Guide' },
   { href: '/docs/architecture', label: 'Architecture' },
+  { href: '/docs/onchain', label: 'On-Chain' },
   { href: '/docs/faq', label: 'FAQ' },
 ];
 

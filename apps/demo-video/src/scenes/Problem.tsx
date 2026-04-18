@@ -1,136 +1,220 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from 'remotion';
+import { COLORS, FONTS } from '../theme';
 
 export const Problem: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   // Agent box slides in
-  const agentX = interpolate(frame, [0, 20], [-400, 0], { extrapolateRight: 'clamp' });
-  const agentOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const agentX = interpolate(frame, [0, 20], [-300, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
   // Arrow grows
-  const arrowWidth = interpolate(frame, [20, 40], [0, 200], { extrapolateRight: 'clamp' });
+  const arrowWidth = interpolate(frame, [15, 35], [0, 280], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
-  // Single DEX box slides in
-  const dexX = interpolate(frame, [30, 50], [400, 0], { extrapolateRight: 'clamp' });
-  const dexOpacity = interpolate(frame, [30, 45], [0, 1], { extrapolateRight: 'clamp' });
+  // DEX box appears
+  const dexScale = spring({ frame: frame - 25, fps, config: { damping: 10, stiffness: 150 } });
 
-  // Price shown
-  const priceOpacity = interpolate(frame, [60, 75], [0, 1], { extrapolateRight: 'clamp' });
+  // Price appears
+  const priceOpacity = interpolate(frame, [35, 45], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
-  // "But was it the best price?" text
-  const questionOpacity = interpolate(frame, [90, 110], [0, 1], { extrapolateRight: 'clamp' });
+  // Price turns red and pulses
+  const priceIsRed = frame > 55;
+  const pricePulse = priceIsRed ? 1 + Math.sin(frame * 0.4) * 0.05 : 1;
 
-  // Red pulse on the single price
-  const pulseScale = frame > 100 ? 1 + Math.sin(frame * 0.3) * 0.05 : 1;
-  const priceColor = frame > 100 ? '#ff4444' : '#00ff88';
+  // Strike through
+  const strikeWidth = interpolate(frame, [60, 70], [0, 100], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
-  // Cross-out animation
-  const strikeWidth = interpolate(frame, [120, 140], [0, 100], { extrapolateRight: 'clamp' });
+  // Question text
+  const questionOpacity = interpolate(frame, [70, 80], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
-  // Stats counter
-  const lossAmount = interpolate(frame, [130, 160], [0, 847], { extrapolateRight: 'clamp' });
+  // Loss counter
+  const lossAmount = frame > 85
+    ? Math.floor(interpolate(frame, [85, 110], [0, 847], {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      }))
+    : 0;
+
+  // Fade out
+  const fadeOut = interpolate(frame, [110, 120], [1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
   return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: '#0a0a0f',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontFamily: 'monospace',
-      }}
-    >
-      {/* Title */}
-      <div style={{ position: 'absolute', top: 80, fontSize: 28, color: '#666', opacity: agentOpacity }}>
-        Single-source execution
-      </div>
+    <AbsoluteFill style={{ backgroundColor: COLORS.bg, opacity: fadeOut }}>
+      {/* Grid background */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `
+            linear-gradient(${COLORS.borderSubtle} 1px, transparent 1px),
+            linear-gradient(90deg, ${COLORS.borderSubtle} 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px',
+          opacity: 0.3,
+        }}
+      />
 
-      {/* Flow diagram */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-        {/* Agent */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          gap: 0,
+          position: 'relative',
+        }}
+      >
+        {/* Agent Box */}
         <div
           style={{
-            opacity: agentOpacity,
             transform: `translateX(${agentX}px)`,
-            padding: '30px 40px',
-            border: '2px solid #333',
-            borderRadius: 12,
-            fontSize: 24,
-            color: '#fff',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 12,
           }}
         >
-          Agent
+          <div
+            style={{
+              width: 160,
+              height: 160,
+              borderRadius: 20,
+              border: `2px solid ${COLORS.cyan}`,
+              backgroundColor: COLORS.bgLight,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <div style={{ fontSize: 48 }}>🤖</div>
+            <div style={{ fontFamily: FONTS.mono, fontSize: 14, color: COLORS.cyan, fontWeight: 700 }}>AGENT</div>
+          </div>
         </div>
 
         {/* Arrow */}
-        <div style={{ width: arrowWidth, height: 2, backgroundColor: '#333', position: 'relative' }}>
-          <div style={{ position: 'absolute', right: -8, top: -6, color: '#333', fontSize: 16 }}>{'>'}</div>
-        </div>
-
-        {/* Single DEX */}
-        <div
-          style={{
-            opacity: dexOpacity,
-            transform: `translateX(${dexX}px)`,
-            padding: '30px 40px',
-            border: `2px solid ${frame > 100 ? '#ff4444' : '#444'}`,
-            borderRadius: 12,
-            textAlign: 'center',
-          }}
-        >
-          <div style={{ fontSize: 24, color: '#fff', marginBottom: 10 }}>1 DEX</div>
+        <div style={{ width: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div
             style={{
-              fontSize: 36,
-              fontWeight: 'bold',
-              color: priceColor,
-              opacity: priceOpacity,
-              transform: `scale(${pulseScale})`,
+              width: arrowWidth,
+              height: 3,
+              background: `linear-gradient(90deg, ${COLORS.cyan}, ${priceIsRed ? COLORS.red : COLORS.cyan})`,
+              borderRadius: 2,
               position: 'relative',
             }}
           >
-            0.4196 WETH
-            {/* Strike-through */}
+            {arrowWidth > 250 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  right: -8,
+                  top: -6,
+                  width: 0,
+                  height: 0,
+                  borderTop: '7px solid transparent',
+                  borderBottom: '7px solid transparent',
+                  borderLeft: `10px solid ${priceIsRed ? COLORS.red : COLORS.cyan}`,
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Single DEX Box */}
+        <div
+          style={{
+            transform: `scale(${dexScale})`,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              width: 200,
+              height: 200,
+              borderRadius: 20,
+              border: `2px solid ${priceIsRed ? COLORS.red : COLORS.orange}`,
+              backgroundColor: COLORS.bgLight,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              gap: 12,
+              position: 'relative',
+            }}
+          >
+            <div style={{ fontFamily: FONTS.mono, fontSize: 14, color: COLORS.dim, fontWeight: 600 }}>1 DEX</div>
             <div
               style={{
-                position: 'absolute',
-                top: '50%',
-                left: 0,
-                height: 3,
-                width: `${strikeWidth}%`,
-                backgroundColor: '#ff4444',
+                fontFamily: FONTS.mono,
+                fontSize: 32,
+                fontWeight: 800,
+                color: priceIsRed ? COLORS.red : COLORS.white,
+                opacity: priceOpacity,
+                transform: `scale(${pricePulse})`,
+                position: 'relative',
               }}
-            />
+            >
+              0.4196
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '50%',
+                  height: 3,
+                  width: `${strikeWidth}%`,
+                  backgroundColor: COLORS.red,
+                  borderRadius: 2,
+                }}
+              />
+            </div>
+            <div style={{ fontFamily: FONTS.mono, fontSize: 12, color: COLORS.dim }}>WETH</div>
           </div>
         </div>
       </div>
 
-      {/* Question */}
+      {/* Question text */}
       <div
         style={{
           position: 'absolute',
-          bottom: 200,
-          fontSize: 42,
-          fontWeight: 'bold',
-          color: '#ff4444',
+          bottom: 180,
+          width: '100%',
+          textAlign: 'center',
           opacity: questionOpacity,
         }}
       >
-        But was it the best price?
+        <div style={{ fontFamily: FONTS.sans, fontSize: 36, fontWeight: 700, color: COLORS.white }}>
+          But was it the <span style={{ color: COLORS.red }}>best</span> price?
+        </div>
       </div>
 
       {/* Loss counter */}
-      {frame > 130 && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 130,
-            fontSize: 24,
-            color: '#ff6666',
-            opacity: interpolate(frame, [130, 145], [0, 1], { extrapolateRight: 'clamp' }),
-          }}
-        >
-          Potential loss: ${Math.floor(lossAmount)} per trade
+      {lossAmount > 0 && (
+        <div style={{ position: 'absolute', bottom: 120, width: '100%', textAlign: 'center' }}>
+          <span style={{ fontFamily: FONTS.mono, fontSize: 22, color: COLORS.red, fontWeight: 600 }}>
+            Potential loss: ${lossAmount} per trade
+          </span>
         </div>
       )}
     </AbsoluteFill>
